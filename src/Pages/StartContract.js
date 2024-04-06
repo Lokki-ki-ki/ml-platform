@@ -11,10 +11,13 @@ import { Divider } from "@arco-design/web-react";
 const StartContract = () => {
     return (
         <div>
-            <h1>Start Contract</h1>
+            <h1>Account Information</h1>
             <UserInfo />
+            <Divider />
+            <h1>All Contracts</h1>
             <AllContracts />
             <Divider />
+            <h1>Start Contract</h1>
             <SubmitContract />
         </div>
     );

@@ -5,6 +5,24 @@ const { Title, Paragraph, Text } = Typography;
 
 const left = "{";
 const right = "}";
+const links = [
+    {
+        name: "Front-end",
+        link: "https://github.com/Lokki-ki-ki/ml-platform"
+    },
+    {
+        name: "Back-end",
+        link: "https://github.com/Lokki-ki-ki/ml-platform-backend"
+    },
+    {
+        name: "Contract",
+        link: "https://github.com/Lokki-ki-ki/ml-platform-contract"
+    },
+    {
+        name: "Oracle",
+        link: "https://github.com/Lokki-ki-ki/ml-platform-oracle"
+    }
+]
 
 const MyMarkdownComponent = () => {
     return (
@@ -22,7 +40,13 @@ const MyMarkdownComponent = () => {
           <Paragraph>
             
             <Text bold>The github links can be found below:</Text>
-
+            <ul>
+                {links.map((item) => (
+                    <li>
+                        <Link icon href={item.link}>{item.name}: {item.link}</Link>
+                    </li>
+                ))}
+            </ul>
           </Paragraph>
           <Title heading={2}>Deatiled Information</Title>
             <Card style={{ width: '80%' }}

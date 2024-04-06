@@ -7,13 +7,17 @@ import store from './Features/store';
 import { Provider } from 'react-redux'
 import 'bootstrap/dist/css/bootstrap.css';
 import "@arco-design/web-react/dist/css/arco.css";
+import { ConfigProvider } from '@arco-design/web-react';
+import enUS from '@arco-design/web-react/es/locale/en-US';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <ConfigProvider locale={enUS}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ConfigProvider>
   </React.StrictMode>
 
 );

@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const contractsSlice = createSlice({
     name: "contracts",
     initialState: {
-        platformAddress: "0xA2342381A576E65CF72886E9f3dcD93043030c74",
+        platformAddress: "0x898CBfd5Cb3970392c3D63B56cdFecc84De053D9",
         contractAddress: [],
         allcontractAddressItem: [],
         allcontractAddress: []

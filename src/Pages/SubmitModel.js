@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Web3 from "web3";
 import { Button, Input, Notification, Divider, Link } from '@arco-design/web-react';
 import { IconCheckCircle } from '@arco-design/web-react/icon';
@@ -8,8 +8,8 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { addSubmission } from "../Features/submissionsSlice";
 import AllSubmissions from "../Components/AllSubmissions";
+import { convertTimestampToDate } from "../Utils/date_utils";
 const contractABI = require('../Docs/MlContract.json');
-
 
 const SubmitModel = () => {
     const { id } = useParams();
@@ -17,8 +17,26 @@ const SubmitModel = () => {
     const [deposit, setDeposit] = useState(0);
     const [dataAdd, setDataAdd] = useState('');
     const [labelAdd, setLabelAdd] = useState('');
+    const [oracleAddress, setOracleAddress] = useState('');
+    const [deadline, setDeadline] = useState('');
+    const [minDeposit, setMinDeposit] = useState(0);
     const currentAccount = useSelector((state) => state.loginAccount.currentAccount);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const web3 = new Web3(window.ethereum);
+        const currcontract = new web3.eth.Contract(contractABI.abi, id);
+
+        const getInfo = async () => {
+            const neworacleAddress = await currcontract.methods.oracleAddress().call();
+            const newdeadline = await currcontract.methods.endTimestamp().call();
+            const newdeposit = await currcontract.methods.depositRequired().call();
+            setOracleAddress(neworacleAddress);
+            setDeadline(convertTimestampToDate(Number(newdeadline)).toUTCString());
+            setMinDeposit(Number(newdeposit));
+        };
+        getInfo();
+    }, [id]);
 
     const handleSubmit = async () => {
         Notification.warning({
@@ -45,19 +63,18 @@ const SubmitModel = () => {
         try {
             const validate = await currcontract.methods.submitWeights(weightAdd).call({from: currentAccount, gasPrice: '20', value: web3.utils.toWei(deposit.toString(), 'wei')});
         } catch (error) {
+            const msg = error.data.message;
             Notification.error({
                 style: {position: 'topRight'},
                 id: 'error',
                 title: 'Submission Errors',
-                content: `Your model has not been submitted because of error: ${error}`,
+                content: `Your model has not been submitted because of error: ${msg}`,
             });
-            console.error("Error Message is: ", error.data.message);
             return;
         }
 
         try {
-
-            const estimate = await currcontract.methods.submitWeights(weightAdd).estimateGas({from: currentAccount, gasPrice: '20', value: 1000000000000000000});
+            // const estimate = await currcontract.methods.submitWeights(weightAdd).estimateGas({from: currentAccount, gasPrice: '20', value: 1000000000000000000});
             const txs = await currcontract.methods.submitWeights(weightAdd).send({from: currentAccount, gasPrice: '20', value: web3.utils.toWei(deposit.toString(), 'wei')});
             // console.log("Estimate: ", txs);
             const event = txs.events.SubmissionDone.returnValues;
@@ -111,7 +128,7 @@ const SubmitModel = () => {
                 content: `The evaluation has been started successfully with txs hash: ${txs}`,
             });
         } catch (error) {
-            const msg = error.data.message || error;
+            const msg = error.data.message;
             Notification.error({
                 style: {position: 'topRight'},
                 id: 'error',
@@ -123,8 +140,10 @@ const SubmitModel = () => {
     }
 
     return (
-        <div>
-            <h1><IconCheckCircle /> Your are submitting model to:<Link icon>{id}</Link></h1>
+        <div style={{ padding: '2%'}}>
+            <h1><IconCheckCircle /> Your are submitting model to:<Link style={{fontSize: '50%'}} icon>{id}</Link></h1>
+            <p>The deadline for this contract is: {deadline}</p>
+            <p>The minimum deposit for this contract is: {minDeposit}</p>
             <Divider />
             <div>
                 <div>
@@ -135,12 +154,11 @@ const SubmitModel = () => {
                 </div>
                 <div style={{ 'justify-content': 'space-between', padding: '10px'}}>
                 <Button type="outline" className="submit-button" onClick={handleSubmit}><span>Submit the models</span></Button>
-                {/* <Button onClick={ () => {}}>Test</Button> */}
                 </div>
             </div>
             <Divider />
             <div>
-                <h1>Models submitted for this contract:</h1>
+                <h1>Models submitted for this contract on whole platform:</h1>
                 <AllSubmissions />
             </div>
             <Divider />

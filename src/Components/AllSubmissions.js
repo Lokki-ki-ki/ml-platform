@@ -24,6 +24,8 @@ const columns = [
     }
 ];
 
+const tableStyle = {width: '80%', padding: '50px', position: 'relative', left: '10%'}
+
 const AllSubmissions = () => {
     const { id } = useParams();
     const submittedItems = useSelector((state) => state.submissions.submittedItems);
@@ -65,7 +67,7 @@ const AllSubmissions = () => {
 
     return (
         <div>
-            <Table columns={columns} data={submittedItems} />
+            <Table columns={columns} data={submittedItems} style={tableStyle} />
         </div>
     );
 
