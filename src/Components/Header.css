@@ -1,0 +1,88 @@
+.header {
+    display: flex;
+    position: fixed;
+    justify-content: space-between;
+    background-color: #063078;
+    width: 100%;
+    top: 0;
+    height: 50px;
+    z-index: 10; /* Keep the header above other content */
+    /* Logo Text */
+    color: #E8F7FF;
+    padding: 10px;
+  }
+  
+  .brand-logo {
+    font-size: 24px; /* Large font size for the logo */
+    font-weight: bold;
+    position: relative;
+  }
+
+  .brand-logo .logo {
+    width: 25px;
+    height: 25px;
+    margin: 0px 15px;
+  }
+  
+  .navigation .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px; /* Space between navigation links */
+  }
+  
+  .navigation .nav-links a {
+    text-decoration: none;
+    font-size: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    padding: 20px 20px;
+    transition: background-color 0.3s;
+  }
+  
+  .navigation .nav-links a:hover {
+    background-color:#114BA3; /* Change to desired hover color */
+    border-radius: 5px; /* Optional: rounded corners on hover */
+  }
+  
+  .auth-links {
+    display: flex;
+    align-items: center;
+  }
+  
+  .auth-links .auth-link {
+    text-decoration: none;
+    border-radius: 5px;
+    background-color: #063078;
+    color: white;
+    margin-left: 10px;
+    margin-right: 10px;
+    /* outline: none; */
+    transition: color 0.3s;
+    font-style: italic;
+    font-weight: bold;
+  }
+  
+  .auth-links .auth-link:hover {
+    color: #C3E7FE; /* Change to desired hover color */
+    font-weight: bolder;
+    cursor: pointer;
+  }
+  
+  /* Adjustments for small screens - responsive design */
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .navigation .nav-links {
+      margin-top: 10px;
+    }
+  
+    .auth-links {
+      margin-top: 10px;
+    }
+  }
+
+  
+  

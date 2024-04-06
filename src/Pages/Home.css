@@ -1,0 +1,106 @@
+.home-container {
+    font-family: Arial, sans-serif;
+  }
+
+    .home-section-one {
+        background-image: url('../../public/home-page-image2.png'); /* Update with your image path */
+        background-size: cover; /* Cover the entire area of the container */
+        background-position: center; /* Center the background image */
+        text-align: center; /* Align text to the center */
+        padding: 100px 0; /* Add some padding above and below your text */
+        width: 100%;
+    }
+
+    .home-section-one ::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(244, 236, 236, 0.5); /* Add a semi-transparent black overlay */
+        z-index: 3;
+    }
+
+
+    .home-section-one h1 {
+        color:aliceblue; /* White text */
+        padding: 20px; /* Add padding around the text */
+        font-size: 2.5em; /* 2.5 times the default font size */
+        font-weight: bold; /* Bold text */
+        z-index: 2;
+    }
+
+    .home-section-one p {
+        color:aliceblue; /* White text */
+        padding: 20px; /* Add padding around the text */
+        font-size: 1.5em; /* 1.5 times the default font size */
+        z-index: 2;
+    }
+    
+  
+  .home-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding-top: 50px; */
+    /* Add more styling as needed */
+  }
+  
+  .home-content h1 {
+    color: #333;
+    /* Add more styling as needed */
+  }
+  
+  .hero-content p {
+    color: #666;
+    /* Add more styling as needed */
+  }
+  
+  .home-buttons {
+    display: flex;
+    justify-content: center;
+    /* padding: 10px; */
+    gap: 20px;
+  }
+  
+    .home-buttons .home-button {
+        padding: 10px 20px;
+        background-color: #E8F7FF;
+        text-decoration: none;
+        color:#333;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+  
+    .home-buttons .home-button:hover {
+        padding: 10px 20px;
+        text-decoration: none;
+        color: #E8F7FF;
+        background-color:#206CCF;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .home-buttons .home-button a {
+        color: #333;
+    }
+
+    .home-buttons .home-button a:hover {
+        text-decoration: none;
+    }
+
+    .home-middle {
+        display: flex;
+        align-items: center;
+        padding: 0px;
+        /* Add more styling as needed */
+    }
+
+  
+  /* Add additional styles for features section and footer */
+  
