@@ -16,14 +16,15 @@ const columns = [
         },
     },
     {
-        title: 'Link', 
-        dataIndex : 'link', 
+        title: 'Link',
+        dataIndex: 'link',
         render: (col, record, index) => {
             return <Link to={`/contracts/${record}`}>Link</Link>
-    }}
+        }
+    }
 ];
 
-const tableStyle = {width: '80%', padding: '50px', position: 'relative', left: '10%'}
+const tableStyle = { width: '80%', padding: '50px', position: 'relative', left: '10%' }
 
 const UserInfo = () => {
     const accounts = useSelector((state) => state.loginAccount.accounts);
@@ -47,9 +48,9 @@ const UserInfo = () => {
 
             try {
                 console.log("Current Account: ", currentAccount);
-                const results = await contract.methods.getContractList(currentAccount).call({from: currentAccount});
+                const results = await contract.methods.getContractList(currentAccount).call({ from: currentAccount });
                 results.forEach(async item => {
-                    const add = await contract.methods.idToContract(Number(item)).call({from: accounts[0]});
+                    const add = await contract.methods.idToContract(Number(item)).call({ from: accounts[0] });
                     if (add.length > 0) {
                         console.log("Result: ", add);
                         dispatch(addContractAddress(add));
@@ -66,19 +67,18 @@ const UserInfo = () => {
 
 
     return (
+
         <div>
-                <div>
-                    <Table ></Table>
-                    <p>Current Account: {isLoading? <p>Loading...</p> : currentAccount} </p>
-                    <h1>Your Contracts:</h1>
-                    <p>
-                    {
-                        isLoading? <Table tableLayoutFixed={true} style={tableStyle} loading columns={columns} /> :
-                        <Table tableLayoutFixed={true} style={tableStyle} columns={columns} data={contractAddress} /> 
-                    }
-                    </p>
-                </div>
+            <p>Current Account: {isLoading ? <p>Loading...</p> : currentAccount} </p>
+            <h1>Your Contracts:</h1>
+            <div>
+                {
+                    isLoading ? <Table tableLayoutFixed={true} style={tableStyle} loading columns={columns} /> :
+                        <Table tableLayoutFixed={true} style={tableStyle} columns={columns} data={contractAddress} />
+                }
+            </div>
         </div>
+
     );
 
 };

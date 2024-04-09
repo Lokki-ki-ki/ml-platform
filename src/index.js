@@ -12,13 +12,11 @@ import enUS from '@arco-design/web-react/es/locale/en-US';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <ConfigProvider locale={enUS}>
       <Provider store={store}>
         <App />
       </Provider>
     </ConfigProvider>
-  </React.StrictMode>
 
 );
 

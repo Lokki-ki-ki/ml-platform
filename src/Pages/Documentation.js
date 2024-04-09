@@ -42,8 +42,8 @@ const MyMarkdownComponent = () => {
             <Text bold>The github links can be found below:</Text>
             <ul>
                 {links.map((item) => (
-                    <li>
-                        <Link icon href={item.link}>{item.name}: {item.link}</Link>
+                    <li key={item.name}>
+                        <Link key={item.link} icon href={item.link}>{item.name}: {item.link}</Link>
                     </li>
                 ))}
             </ul>
@@ -69,7 +69,7 @@ const MyMarkdownComponent = () => {
                 </ul>
                 </Text>
             </Card>
-          <Paragraph style={{ "margin-top": "20px"}}>
+          <Paragraph style={{ marginTop: "20px"}}>
             <Card style={{ width: '80%' }}
                     title='Evaluate the models from clients:'>
                     <Text heading={6}>

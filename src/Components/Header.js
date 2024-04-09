@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setLoginAccount, clearLoginAccount } from '../Features/loginAccountSlice';
 import { clearContractAddress } from '../Features/contractsSlice';
 import './Header.css'; // Ensure you have a Header.css file in the same directory
+import { pre_require_check } from '../Utils/provider_utils';
 
 const Header = () => {
 
@@ -16,13 +17,22 @@ const Header = () => {
 
   // useEffect to load the web3 object and listen for account changes
   useEffect(() => {
+    if (!pre_require_check()) {
+      console.log("check");
+      return;
+    }
     const loadAccounts = async () => {
-      if (window.ethereum.isConnected()) {
+      if (window.ethereum && window.ethereum.isConnected()) {
         const web3 = new Web3(window.ethereum);
         const accounts = await web3.eth.getAccounts();
         dispatch(setLoginAccount({ accounts: accounts, currentAccount: accounts[0] }));
       } else {
-        window.location.reload();
+        Notification.warning({
+          style: { position: 'topRight' },
+          id: 'error',
+          title: 'Error',
+          content: 'Please install MetaMask or use a browser that supports MetaMask',
+        });
       }
     };
 

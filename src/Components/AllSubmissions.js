@@ -1,10 +1,11 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { Link, Table } from '@arco-design/web-react';
+import { Table } from '@arco-design/web-react';
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { addSubmission, setStartBlock } from '../Features/submissionsSlice';
 import contractABI from '../Docs/MlContract.json';
+import { pre_require_check } from '../Utils/provider_utils';
 import Web3 from 'web3';
 
 const columns = [
@@ -34,7 +35,15 @@ const AllSubmissions = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log("Current Block: ", submittedItems);
+        if (!pre_require_check()) {
+            Notification.warning({
+                style: {position: 'topRight'},
+                id: 'error',
+                title: 'Error',
+                content: 'Please install MetaMask or use a browser that supports MetaMask',
+            });
+            return;
+          }
         async function getCurrentSubmissions() {
             try {
                 const web3 = new Web3(window.ethereum);

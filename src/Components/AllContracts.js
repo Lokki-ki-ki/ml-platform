@@ -3,9 +3,9 @@ import Web3 from "web3";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useEffect} from "react";
-import { Table } from "@arco-design/web-react";
+import { Table, Notification } from "@arco-design/web-react";
 import { addWholePlatformContractAddress } from "../Features/contractsSlice";
-import { get_contract } from "../Utils/provider_utils";
+import { get_contract, pre_require_check } from "../Utils/provider_utils";
 import { convertTimestampToDate } from "../Utils/date_utils";
 const contractABI = require('../Docs/MlPlatformFactory.json');
 
@@ -40,14 +40,21 @@ const columns = [
 const tableStyle = {width: '80%', padding: '50px', position: 'relative', left: '10%'}
 
 const AllContracts = () => {
-
     const platformAddress = useSelector((state) => state.contracts.platformAddress);
     console.log("Platform Address: ", platformAddress)
     const allcontractAddressItem = useSelector((state) => state.contracts.allcontractAddressItem);
     const dispatch = useDispatch();
     
     useEffect(() => {
-        console.log('AllCOntracts +1');
+        if (!pre_require_check()) {
+            Notification.warning({
+                style: {position: 'topRight'},
+                id: 'error',
+                title: 'Error',
+                content: 'Please install MetaMask or use a browser that supports MetaMask',
+            });
+            return;
+          }
         async function getAllContracts() {
             let contract;
             try  {

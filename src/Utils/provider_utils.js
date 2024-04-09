@@ -8,4 +8,11 @@ const get_contract = async (web3, contract_abi, contract_address) => {
     }
 }
 
-export {get_contract};
+const pre_require_check = () => {
+    if (window.ethereum) {
+        return true;
+    }
+    return false;
+}
+
+export {get_contract, pre_require_check};
