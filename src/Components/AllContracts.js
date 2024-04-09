@@ -2,10 +2,10 @@ import React from "react";
 import Web3 from "web3";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { Table } from "@arco-design/web-react";
 import { addWholePlatformContractAddress } from "../Features/contractsSlice";
-import { type } from "@testing-library/user-event/dist/type";
+import { get_contract } from "../Utils/provider_utils";
 import { convertTimestampToDate } from "../Utils/date_utils";
 const contractABI = require('../Docs/MlPlatformFactory.json');
 
@@ -34,7 +34,6 @@ const columns = [
     dataIndex : 'link', 
     render: (col, record, index) => {
         return <Link to={`/contracts/${record.mlPlatformAddress}`}>Link</Link>
-        // return <span>{record}</span>
     }}
 ];
 
@@ -43,15 +42,21 @@ const tableStyle = {width: '80%', padding: '50px', position: 'relative', left: '
 const AllContracts = () => {
 
     const platformAddress = useSelector((state) => state.contracts.platformAddress);
+    console.log("Platform Address: ", platformAddress)
     const allcontractAddressItem = useSelector((state) => state.contracts.allcontractAddressItem);
-    const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     
     useEffect(() => {
-        // setIsLoading(true);
+        console.log('AllCOntracts +1');
         async function getAllContracts() {
-            const web3 = new Web3("http://127.0.0.1:7545");
-            const contract = new web3.eth.Contract(contractABI.abi, platformAddress);
+            let contract;
+            try  {
+                const web3 = new Web3(window.ethereum);
+                contract = await get_contract(web3, contractABI.abi, platformAddress)
+            } catch (e) {
+                window.ethereum.reload();
+                return;
+            }
             try {
                 // Event Format
                 // event MlPlatformCreated(address indexed owner, address mlPlatformAddress, uint256 contractId, uint256 ddlTimestamp, uint256 depositRequired);
@@ -72,10 +77,8 @@ const AllContracts = () => {
                     console.log("Test", typeof row);
                     dispatch(addWholePlatformContractAddress(row));
                 });
-                // setIsLoading(false);
             } catch (error) {
                 console.error("Error Message is: ", error);
-                // setIsLoading(false);
             }
         }
         getAllContracts();

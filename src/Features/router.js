@@ -1,9 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Documentation from '../Pages/Documentation';
 import StartContract from '../Pages/StartContract';
-import SubmitModel from '../Pages/SubmitModel';
+import StartModel from '../Pages/StartModel';
 import Home from '../Pages/Home';
 import ContractDetails from '../Pages/ContractDetails';
+import Helps from '../Pages/Helps';
 
 // Define your routes
 const router = createBrowserRouter([
@@ -21,13 +22,17 @@ const router = createBrowserRouter([
   },
   {
     path: '/contracts/:id',
-    element: <SubmitModel />,
+    element: <StartModel />,
     children: [
       {
         path: 'details',
         element: <ContractDetails />,
       },
     ],
+  },
+  {
+    path: '/helps',
+    element: <Helps />,
   }
 ]);
 

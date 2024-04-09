@@ -7,11 +7,8 @@ const convertTimestampToDate = (timestamp) => {
 
 const convertDateToTimestamp = (range) => {
     const ddl = new Date();
-    ddl.setDate(ddl.getDate() + Number(range));
-    // console.log(ddl);
-    const timestamp = Math.floor(ddl.getTime() / 1000);
-    console.log("Timestamp is:", typeof timestamp, timestamp);
-    return timestamp;
+    const timestamp = ddl.getTime() + range * 24 * 60 * 60 * 1000;
+    return Math.floor(timestamp / 1000);
 };
 
 export { convertTimestampToDate, convertDateToTimestamp };

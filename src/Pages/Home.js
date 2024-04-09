@@ -14,7 +14,7 @@ const Home = () => {
                 <p>Deploy your own contract through the contract factory to enjoy your own possibility to gather high quality data without privacy issues.</p>
                 <div className="home-buttons">
                     <Button type="secondary" className="home-button" href="/documentation"><span>Start the Contract</span></Button>
-                    <Button type="secondary" className="home-button" href="/documentation"><span>Read the Documentation</span></Button>
+                    <Button type="secondary" className="home-button" href="/contracts"><span>Read the Documentation</span></Button>
                 </div>
                 </div>
             </section>

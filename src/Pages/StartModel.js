@@ -9,9 +9,13 @@ import { useDispatch } from "react-redux";
 import { addSubmission } from "../Features/submissionsSlice";
 import AllSubmissions from "../Components/AllSubmissions";
 import { convertTimestampToDate } from "../Utils/date_utils";
+import UserRewards from "../Components/UserRewards";
+import { errorMessages } from "../Utils/message_utils";
+import StartNextRound from "../Components/StartNextRound";
+
 const contractABI = require('../Docs/MlContract.json');
 
-const SubmitModel = () => {
+const StartModel = () => {
     const { id } = useParams();
     const [weightAdd, setWeightAdd] = useState('');
     const [deposit, setDeposit] = useState(0);
@@ -19,7 +23,9 @@ const SubmitModel = () => {
     const [labelAdd, setLabelAdd] = useState('');
     const [oracleAddress, setOracleAddress] = useState('');
     const [deadline, setDeadline] = useState('');
+    const [round, setRound] = useState(0);
     const [minDeposit, setMinDeposit] = useState(0);
+    const [owner, setOwner] = useState('');
     const currentAccount = useSelector((state) => state.loginAccount.currentAccount);
     const dispatch = useDispatch();
 
@@ -31,16 +37,20 @@ const SubmitModel = () => {
             const neworacleAddress = await currcontract.methods.oracleAddress().call();
             const newdeadline = await currcontract.methods.endTimestamp().call();
             const newdeposit = await currcontract.methods.depositRequired().call();
+            const newround = await currcontract.methods.roundOfTraining().call();
+            const owner = await currcontract.methods.contractOwner().call();
             setOracleAddress(neworacleAddress);
             setDeadline(convertTimestampToDate(Number(newdeadline)).toUTCString());
             setMinDeposit(Number(newdeposit));
+            setRound(Number(newround));
+            setOwner(owner);
         };
         getInfo();
     }, [id]);
 
     const handleSubmit = async () => {
         Notification.warning({
-            style: {position: 'topRight'},
+            style: { position: 'topRight' },
             id: 'submitting',
             title: 'Model Submitted',
             content: 'Will update after submitted...',
@@ -50,7 +60,7 @@ const SubmitModel = () => {
         // Check whether the string deposit can be converted into number
         if (typeof weightAdd !== 'string' || typeof parseInt(deposit) !== 'number') {
             Notification.error({
-                style: {position: 'topRight'},
+                style: { position: 'topRight' },
                 id: 'error',
                 title: 'Submission Errors',
                 content: 'Please input the correct type of weight address and deposit amount',
@@ -60,22 +70,10 @@ const SubmitModel = () => {
         }
         const web3 = new Web3(window.ethereum);
         const currcontract = new web3.eth.Contract(contractABI.abi, id);
-        try {
-            const validate = await currcontract.methods.submitWeights(weightAdd).call({from: currentAccount, gasPrice: '20', value: web3.utils.toWei(deposit.toString(), 'wei')});
-        } catch (error) {
-            const msg = error.data.message;
-            Notification.error({
-                style: {position: 'topRight'},
-                id: 'error',
-                title: 'Submission Errors',
-                content: `Your model has not been submitted because of error: ${msg}`,
-            });
-            return;
-        }
 
         try {
-            // const estimate = await currcontract.methods.submitWeights(weightAdd).estimateGas({from: currentAccount, gasPrice: '20', value: 1000000000000000000});
-            const txs = await currcontract.methods.submitWeights(weightAdd).send({from: currentAccount, gasPrice: '20', value: web3.utils.toWei(deposit.toString(), 'wei')});
+            await currcontract.methods.submitWeights(weightAdd).call({ from: currentAccount, gasPrice: '20', value: web3.utils.toWei(deposit.toString(), 'wei') });
+            const txs = await currcontract.methods.submitWeights(weightAdd).send({ from: currentAccount, gasPrice: '20', value: web3.utils.toWei(deposit.toString(), 'wei') });
             // console.log("Estimate: ", txs);
             const event = txs.events.SubmissionDone.returnValues;
             // console.log("Event: ", event);
@@ -88,18 +86,19 @@ const SubmitModel = () => {
             }
             dispatch(addSubmission(row));
             Notification.success({
-                style: {position: 'topRight'},
+                style: { position: 'topRight' },
                 id: 'submitting',
                 title: 'Model Submitted',
                 content: `Your model has been submitted successfully with txs hash: ${txs.transactionHash}`,
             });
-            
+
         } catch (error) {
+            const msg = errorMessages(error);
             Notification.error({
-                style: {position: 'topRight'},
+                style: { position: 'topRight' },
                 id: 'error',
                 title: 'Submission Errors',
-                content: `Your model has not been submitted because of error: ${error}`,
+                content: `Your model has not been submitted because of error: ${msg}`,
             });
             console.error("Error Message is: ", error);
         }
@@ -107,30 +106,30 @@ const SubmitModel = () => {
     }
 
     const startEvaluation = async () => {
-    // function startEvaluation(string memory testDataAddress, string memory testDataLabelAddress) public onlyParticipants onlySubmission {
+        // function startEvaluation(string memory testDataAddress, string memory testDataLabelAddress) public onlyParticipants onlySubmission {
         Notification.normal({
-            style: {position: 'topRight'},
+            style: { position: 'topRight' },
             id: 'evaluating',
             title: 'Model Submitted',
-            content: 'Will update after evaluation is done...',
-            duration: 5000
+            content: 'Will update after evaluation is done...'
         });
         const web3 = new Web3(window.ethereum);
         const currcontract = new web3.eth.Contract(contractABI.abi, id);
-        
+
         try {
-            const txs = await currcontract.methods.startEvaluation(dataAdd, labelAdd).call({from: currentAccount});
+            await currcontract.methods.startEvaluation(dataAdd, labelAdd).call({ from: currentAccount });
+            const txs = await currcontract.methods.startEvaluation(dataAdd, labelAdd).send({ from: currentAccount, gasPrice: '21' });
             console.log("Txs: ", txs);
             Notification.success({
-                style: {position: 'topRight'},
+                style: { position: 'topRight' },
                 id: 'evaluating',
                 title: 'Evaluation Started',
                 content: `The evaluation has been started successfully with txs hash: ${txs}`,
             });
         } catch (error) {
-            const msg = error.data.message;
+            const msg = errorMessages(error);
             Notification.error({
-                style: {position: 'topRight'},
+                style: { position: 'topRight' },
                 id: 'error',
                 title: 'Evaluation Errors',
                 content: `The evaluation has not been started because of error: ${msg}`,
@@ -140,20 +139,21 @@ const SubmitModel = () => {
     }
 
     return (
-        <div style={{ padding: '2%'}}>
-            <h1><IconCheckCircle /> Your are submitting model to:<Link style={{fontSize: '50%'}} icon>{id}</Link></h1>
+        <div style={{ padding: '2%' }}>
+            <h1><IconCheckCircle /> Your are submitting model to:<Link style={{ fontSize: '50%' }} icon>{id}</Link></h1>
             <p>The deadline for this contract is: {deadline}</p>
             <p>The minimum deposit for this contract is: {minDeposit}</p>
+            <p>Current Round: {round}</p>
             <Divider />
             <div>
                 <div>
-                    <Input placeholder='Please input model address' onChange={(e) => setWeightAdd(e)} style={{ width:"30%", margin: 20 }}></Input>
+                    <Input placeholder='Please input model address' onChange={(e) => setWeightAdd(e)} style={{ width: "30%", margin: 20 }}></Input>
                 </div>
                 <div>
-                    <Input placeholder='Please input deposit amount' onChange={(e) => setDeposit(e)} style={{ width:"30%", margin: 20 }}></Input>
+                    <Input placeholder='Please input deposit amount' onChange={(e) => setDeposit(e)} style={{ width: "30%", margin: 20 }}></Input>
                 </div>
-                <div style={{ 'justify-content': 'space-between', padding: '10px'}}>
-                <Button type="outline" className="submit-button" onClick={handleSubmit}><span>Submit the models</span></Button>
+                <div style={{ 'justify-content': 'space-between', padding: '10px' }}>
+                    <Button type="outline" className="submit-button" onClick={handleSubmit}><span>Submit the models</span></Button>
                 </div>
             </div>
             <Divider />
@@ -166,16 +166,31 @@ const SubmitModel = () => {
                 <h1>Start Evaluation</h1>
                 <p>The time range for this contract is setted by the initializers, if the submission deadline arrives, the initializer can start the evaluations, other participants can only start the evaluation when the initializer doesn't show up.</p>
                 <div>
-                    <Input placeholder='Please input data address' onChange={(e) => setDataAdd(e)} style={{ width:"30%", margin: 20 }}></Input>
+                    <Input placeholder='Please input data address' onChange={(e) => setDataAdd(e)} style={{ width: "30%", margin: 20 }}></Input>
                 </div>
                 <div>
-                    <Input placeholder='Please input labels amount' onChange={(e) => setLabelAdd(e)} style={{ width:"30%", margin: 20 }}></Input>
+                    <Input placeholder='Please input labels amount' onChange={(e) => setLabelAdd(e)} style={{ width: "30%", margin: 20 }}></Input>
                 </div>
                 <Button type="primary" onClick={startEvaluation}>Start Evaluation</Button>
             </div>
+            <Divider />
+            <div>
+                <UserRewards />
+            </div>
+            <div>
+                {
+                    owner === currentAccount ?
+                        <div>
+                            <h1>Manage your contract</h1>
+                            <h2>Start Next Round:</h2>
+                            <StartNextRound id={id} />
+                        </div> : <div></div>
+                }
+            </div>
+
 
         </div>
     );
 };
 
-export default SubmitModel;
+export default StartModel;

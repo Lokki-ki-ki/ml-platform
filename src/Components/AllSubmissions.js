@@ -1,30 +1,31 @@
 import React from 'react';
-import Web3 from 'web3';
 import { useEffect } from 'react';
 import { Link, Table } from '@arco-design/web-react';
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { addSubmission, setStartBlock } from '../Features/submissionsSlice';
 import contractABI from '../Docs/MlContract.json';
+import Web3 from 'web3';
 
 const columns = [
     {
-      title: 'Client ID',
-      dataIndex: 'clientId',
-      sorter: (a, b) => Number(a.clientId) - Number(b.clientId),
+        title: 'Client ID',
+        dataIndex: 'clientId',
+        sorter: (a, b) => Number(a.clientId) - Number(b.clientId),
     },
     {
-      title: 'Weight Address',
-      dataIndex: 'weightsAddress',
-      sorter: (a, b) => a.weightsAddress.length - b.weightsAddress.length,
+        title: 'Weight Address',
+        dataIndex: 'weightsAddress',
+        sorter: (a, b) => a.weightsAddress.length - b.weightsAddress.length,
     },
-    {title: 'Reputation', 
-    dataIndex : 'reputation', 
-    sorter: (a, b) => Number(a.reputation) - Number(b.reputation),
+    {
+        title: 'Reputation',
+        dataIndex: 'reputation',
+        sorter: (a, b) => Number(a.reputation) - Number(b.reputation),
     }
 ];
 
-const tableStyle = {width: '80%', padding: '50px', position: 'relative', left: '10%'}
+const tableStyle = { width: '80%', padding: '50px', position: 'relative', left: '10%' }
 
 const AllSubmissions = () => {
     const { id } = useParams();

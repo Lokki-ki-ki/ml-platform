@@ -34,9 +34,10 @@ const UserInfo = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        console.log('UserInfo +1');
         setIsLoading(true);
         dispatch(clearContractAddress());
-        const web3 = new Web3("http://127.0.0.1:7545");
+        const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(contractABI.abi, platformAddress);
         async function getContractList() {
             if (currentAccount === null) {

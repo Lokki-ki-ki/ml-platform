@@ -1,13 +1,13 @@
 import React from "react";
 import { useRef } from "react";
-import { Form, Input, Button, Checkbox, Divider, Notification, Message } from '@arco-design/web-react';
+import { Form, Input, Button, Checkbox, Notification, Message } from '@arco-design/web-react';
 import { useState } from "react";
-import Web3 from "web3";
 import contractABI from '../Docs/MlPlatformFactory.json';
 import { useSelector, useDispatch } from "react-redux";
 import { addWholePlatformContractAddress } from "../Features/contractsSlice";
 import { addContractAddress } from "../Features/contractsSlice";
-import { convertTimestampToDate } from "../Utils/date_utils";
+import { convertTimestampToDate, convertDateToTimestamp } from "../Utils/date_utils";
+import Web3 from "web3";
 const FormItem = Form.Item;
 
 
@@ -18,16 +18,7 @@ const SubmitContract = () => {
     const [values, setValues] = useState({});
     const [checked, setChecked] = useState(false);
     const dispatch = useDispatch();
-    
-    // Function to convert date to timestamp with range
-    const convertDateToTimestamp = (range) => {
-        const ddl = new Date();
-        ddl.setDate(ddl.getDate() + Number(range));
-        // console.log(ddl);
-        const timestamp = Math.floor(ddl.getTime() / 1000);
-        console.log("Timestamp is:", typeof timestamp, timestamp);
-        return timestamp;
-    };
+
 
 
     async function handleSubmit() {
@@ -47,14 +38,15 @@ const SubmitContract = () => {
         const currcontract = new web3.eth.Contract(contractABI.abi, platformAddress);
         // console.log('check', typeof values.contract.range);
         const ddlTimestamp = convertDateToTimestamp(values.contract.range);
-        console.log('check', ddlTimestamp)
+        console.log('check ddl Timestamp', ddlTimestamp);
         // get current timestamp
-        const current = web3.eth.getBlock('latest').timestamp;
-        console.log('current timestamp', current);
+        const current = await web3.eth.getBlock('latest');
+        console.log('current block timestamp', current.timestamp);
         const depositReq = values.contract.deposit ? Number(values.contract.deposit) : 100;
         try {
             const res = await currcontract.methods.createMlPlatform(values.contract.modelAddress, values.contract.datahash, values.contract.labelhash, ddlTimestamp, depositReq)
-                .call({from: currentAccount, gasPrice:'21000', value: web3.utils.toWei('1', 'ether')});
+                .call({from: currentAccount, gasPrice:'20', value: web3.utils.toWei(values.contract.reward, 'ether')});
+                console.log('test', res);
         } catch (error) {
             const msg = error.data.message;
             console.log(error);
@@ -67,7 +59,8 @@ const SubmitContract = () => {
             return;
         };
         try {
-            const res = await currcontract.methods.createMlPlatform(values.contract.modelAddress, values.contract.datahash, values.contract.labelhash, ddlTimestamp, depositReq).send({from: currentAccount, gasPrice:'21000', value: web3.utils.toWei('1', 'ether'), });
+            const res = await currcontract.methods.createMlPlatform(values.contract.modelAddress, values.contract.datahash, values.contract.labelhash, ddlTimestamp, depositReq)
+                .send({from: currentAccount, gasPrice:'20', value: web3.utils.toWei(values.contract.reward, 'ether'), });
             const event = res.events.MlPlatformCreated.returnValues;
             const row = {
                 mlPlatformAddress: event.mlPlatformAddress,
