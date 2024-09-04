@@ -8,6 +8,7 @@ import { setLoginAccount, clearLoginAccount } from '../Features/loginAccountSlic
 import { clearContractAddress } from '../Features/contractsSlice';
 import './Header.css'; // Ensure you have a Header.css file in the same directory
 import { pre_require_check } from '../Utils/provider_utils';
+import { Notification } from '@arco-design/web-react';
 
 const Header = () => {
 

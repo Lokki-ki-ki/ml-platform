@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Input, Button } from '@arco-design/web-react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Notification } from '@arco-design/web-react';
 const contractABI = require('../Docs/MlContract.json');
 
 
@@ -22,9 +23,9 @@ const StartNextRound = () => {
     const [round, setRound] = useState(0);
     const currentAccount = useSelector((state) => state.loginAccount.currentAccount);
 
-    const startNextRound = async () => {
+    const startNext = async () => {
         const web3 = new Web3(window.ethereum);
-        const currcontract = new web3.eth.Contract(contractABI.abi, id);
+        const currcontract = new web3.eth.Contract(contractABI.abi, id.id);
         const newDeposit = parseInt(nextRoundDeposit);
         const newDdlTimestamp = convertDateToTimestamp(Number(newDdl));
         
@@ -56,7 +57,7 @@ const StartNextRound = () => {
             <div><Input placeholder="Please put reward for next round" onChange={(e) => setNextRoundDeposit(e)} style={{ width:"30%", margin: 20 }}></Input></div>
             <div><Input placeholder="Please put test data hash" onChange={(e) => setTestData(e)} style={{ width:"30%", margin: 20 }}></Input></div>
             <div><Input placeholder="Please put test label hash" onChange={(e) => setTestLabel(e)} style={{ width:"30%", margin: 20 }}></Input></div>
-            <Button onClick={startNextRound}>Start Next Round</Button>
+            <Button onClick={startNext}>Start Next Round</Button>
         </div>
     );
 
